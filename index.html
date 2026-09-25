@@ -79,6 +79,14 @@ button.danger {
   background: #b91c1c;
 }
 
+button.green {
+  background: #15803d;
+}
+
+button.blue {
+  background: #2563eb;
+}
+
 .hidden {
   display: none !important;
 }
@@ -108,6 +116,44 @@ button.danger {
   margin-top: 12px;
 }
 
+.seller-card {
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  margin-top: 12px;
+  overflow: hidden;
+}
+
+.seller-header {
+  padding: 15px;
+  background: #f9fafb;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.seller-header:hover {
+  background: #f3f4f6;
+}
+
+.seller-content {
+  padding: 15px;
+}
+
+.finished-order {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 8px;
+  background: #f9fafb;
+  font-size: 14px;
+}
+
+.active-order {
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 12px;
+}
+
 .accounts {
   background: #111827;
   color: white;
@@ -117,6 +163,7 @@ button.danger {
   overflow-wrap: anywhere;
   max-height: 300px;
   overflow-y: auto;
+  margin-top: 10px;
 }
 
 .chat-box {
@@ -145,9 +192,34 @@ button.danger {
   background: #e5e7eb;
 }
 
+.message-image {
+  max-width: 100%;
+  max-height: 250px;
+  border-radius: 8px;
+  margin-top: 5px;
+  display: block;
+}
+
 .small {
   color: #6b7280;
   font-size: 13px;
+}
+
+.history-title {
+  margin-top: 25px;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.file-input {
+  background: white;
+  padding: 8px;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid #e5e7eb;
+  margin: 20px 0;
 }
 
 h2, h3 {
@@ -165,7 +237,10 @@ h2, h3 {
 
 <div class="container">
 
-<!-- AUTH -->
+<!-- =========================
+     AUTH
+========================= -->
+
 <section id="authSection" class="card">
 
   <h2>Login / Daftar</h2>
@@ -195,7 +270,10 @@ h2, h3 {
 </section>
 
 
-<!-- SELLER -->
+<!-- =========================
+     SELLER
+========================= -->
+
 <section id="sellerSection" class="hidden">
 
   <div class="card">
@@ -206,10 +284,7 @@ h2, h3 {
       Kamu login sebagai seller.
     </p>
 
-    <button
-      onclick="logout()"
-      class="danger"
-    >
+    <button onclick="logout()" class="danger">
       Logout
     </button>
 
@@ -288,7 +363,10 @@ akun3@example.com
 </section>
 
 
-<!-- ADMIN -->
+<!-- =========================
+     ADMIN
+========================= -->
+
 <section id="adminSection" class="hidden">
 
   <div class="card">
@@ -299,10 +377,7 @@ akun3@example.com
       Kamu login sebagai administrator.
     </p>
 
-    <button
-      onclick="logout()"
-      class="danger"
-    >
+    <button onclick="logout()" class="danger">
       Logout
     </button>
 
@@ -311,19 +386,12 @@ akun3@example.com
 
   <div class="card">
 
-    <h2>Semua Setoran</h2>
+    <h2>📦 Semua Seller & Order</h2>
 
-    <select
-      id="statusFilter"
-      onchange="loadAdminSubmissions()"
-    >
-      <option value="">Semua Status</option>
-      <option>MENUNGGU PENGECEKAN</option>
-      <option>DISETUJUI</option>
-      <option>MENUNGGU PEMBAYARAN</option>
-      <option>SUDAH DIBAYAR</option>
-      <option>DITOLAK</option>
-    </select>
+    <p class="small">
+      Order aktif ditampilkan lengkap.
+      Order SUDAH DIBAYAR dan DITOLAK diperkecil sebagai history.
+    </p>
 
     <div id="adminSubmissions">
       Memuat...
@@ -341,6 +409,8 @@ akun3@example.com
     </div>
 
     <div id="adminChatArea" class="hidden">
+
+      <hr>
 
       <h3 id="chatSellerTitle">
         Chat
@@ -360,6 +430,26 @@ akun3@example.com
       <button onclick="sendAdminMessage()">
         Kirim Pesan
       </button>
+
+      <p class="small">
+        Kirim bukti pembayaran:
+      </p>
+
+      <input
+        id="paymentProof"
+        type="file"
+        accept="image/*"
+        class="file-input"
+      >
+
+      <button
+        onclick="sendPaymentProof()"
+        class="green"
+      >
+        📷 Kirim Bukti Pembayaran
+      </button>
+
+      <p id="uploadMessage" class="small"></p>
 
     </div>
 
@@ -398,6 +488,9 @@ const supabaseClient =
 
 let currentUser = null;
 let currentChatSeller = null;
+let sellerProfiles = {};
+
+let openSellerPanels = {};
 
 
 /* =========================
@@ -417,7 +510,7 @@ async function register() {
     return;
   }
 
-  const { error } =
+  const { data, error } =
     await supabaseClient.auth.signUp({
       email,
       password
@@ -428,9 +521,14 @@ async function register() {
     return;
   }
 
-  showAuth(
-    "Pendaftaran berhasil. Silakan login."
-  );
+  if (data.session) {
+    showAuth("Pendaftaran berhasil.");
+    await loadApp();
+  } else {
+    showAuth(
+      "Pendaftaran berhasil. Jika konfirmasi email aktif, silakan konfirmasi email terlebih dahulu."
+    );
+  }
 }
 
 
@@ -508,6 +606,7 @@ async function loadApp() {
       .getElementById("adminSection")
       .classList.remove("hidden");
 
+    await loadSellerProfiles();
     await loadAdminSubmissions();
     await loadSellerList();
 
@@ -525,7 +624,54 @@ async function loadApp() {
 
 
 /* =========================
-   SELLER
+   SELLER PROFILE
+========================= */
+
+async function loadSellerProfiles() {
+
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .from("seller_profiles")
+    .select("*")
+    .order("seller_number", {
+      ascending: true
+    });
+
+  if (error) {
+
+    console.error(error);
+    return;
+  }
+
+  sellerProfiles = {};
+
+  data.forEach(profile => {
+
+    sellerProfiles[
+      profile.user_id
+    ] = profile.seller_number;
+
+  });
+}
+
+
+function getSellerName(sellerId) {
+
+  if (sellerProfiles[sellerId]) {
+
+    return "Seller " +
+      sellerProfiles[sellerId];
+
+  }
+
+  return "Seller";
+}
+
+
+/* =========================
+   SELLER SUBMISSION
 ========================= */
 
 function countAccounts() {
@@ -543,7 +689,8 @@ function countAccounts() {
 
   document.getElementById(
     "accountCount"
-  ).textContent = lines.length;
+  ).textContent =
+    lines.length;
 }
 
 
@@ -673,28 +820,21 @@ async function loadSellerSubmissions() {
       <div class="item">
 
         <b>
-          ${escapeHtml(
-            item.account_count
-          )} akun
+          ${escapeHtml(item.account_count)}
+          akun
         </b>
 
         <p>
           DANA:
-          ${escapeHtml(
-            item.dana_number
-          )}
+          ${escapeHtml(item.dana_number)}
         </p>
 
         <span class="status">
-          ${escapeHtml(
-            item.status
-          )}
+          ${escapeHtml(item.status)}
         </span>
 
         <p class="small">
-          ${new Date(
-            item.created_at
-          ).toLocaleString("id-ID")}
+          ${formatDate(item.created_at)}
         </p>
 
       </div>
@@ -733,28 +873,67 @@ async function loadSellerChat() {
     return;
   }
 
-  box.innerHTML =
-    data.map(message => `
+  box.innerHTML = "";
 
-      <div class="message ${
+  for (const message of data) {
+
+    const div =
+      document.createElement("div");
+
+    div.className =
+      "message " +
+      (
         message.sender_id === currentUser.id
           ? "me"
           : "other"
-      }">
+      );
 
-        ${escapeHtml(
-          message.message
-        )}
+    let html = "";
 
-        <div class="small">
-          ${new Date(
-            message.created_at
-          ).toLocaleString("id-ID")}
-        </div>
+    if (message.message) {
 
+      html +=
+        escapeHtml(message.message);
+
+    }
+
+    if (message.image_url) {
+
+      const imageUrl =
+        await getSignedImageUrl(
+          message.image_url
+        );
+
+      if (imageUrl) {
+
+        html += `
+          <img
+            src="${imageUrl}"
+            class="message-image"
+            alt="Bukti pembayaran"
+          >
+        `;
+
+      }
+
+    }
+
+    html += `
+      <div class="small">
+        ${
+          message.sender_id === currentUser.id
+            ? "Kamu"
+            : "Admin"
+        }
+        ·
+        ${formatDate(message.created_at)}
       </div>
+    `;
 
-    `).join("");
+    div.innerHTML = html;
+
+    box.appendChild(div);
+  }
 
   box.scrollTop =
     box.scrollHeight;
@@ -784,7 +963,8 @@ async function sendSellerMessage() {
         sender_id:
           currentUser.id,
 
-        message
+        message:
+          message
 
       });
 
@@ -807,31 +987,15 @@ async function sendSellerMessage() {
 
 async function loadAdminSubmissions() {
 
-  const filter =
-    document.getElementById(
-      "statusFilter"
-    ).value;
-
-  let query =
-    supabaseClient
-      .from("submissions")
-      .select("*")
-      .order("created_at", {
-        ascending: false
-      });
-
-  if (filter) {
-    query =
-      query.eq(
-        "status",
-        filter
-      );
-  }
-
   const {
     data,
     error
-  } = await query;
+  } = await supabaseClient
+    .from("submissions")
+    .select("*")
+    .order("created_at", {
+      ascending: false
+    });
 
   const box =
     document.getElementById(
@@ -854,365 +1018,197 @@ async function loadAdminSubmissions() {
     return;
   }
 
+
+  /* =========================
+     GROUP BY SELLER
+  ========================= */
+
+  const grouped = {};
+
+  data.forEach(item => {
+
+    if (!grouped[item.seller_id]) {
+
+      grouped[item.seller_id] = [];
+
+    }
+
+    grouped[item.seller_id].push(item);
+
+  });
+
+
   box.innerHTML =
-    data.map(item => `
+    Object.keys(grouped)
+      .sort((a, b) => {
 
-      <div class="item">
+        const numberA =
+          sellerProfiles[a] || 999999;
 
-        <b>
-          ${escapeHtml(
-            item.account_count
-          )} akun
-        </b>
+        const numberB =
+          sellerProfiles[b] || 999999;
 
-        <p>
-          Seller ID:
-          ${escapeHtml(
-            item.seller_id
-          )}
-        </p>
+        return numberA - numberB;
 
-        <p>
-          DANA:
-          ${escapeHtml(
-            item.dana_number
-          )}
-        </p>
-
-        <p>
-          Tanggal:
-          ${new Date(
-            item.created_at
-          ).toLocaleString("id-ID")}
-        </p>
-
-        <select
-          onchange="updateStatus(
-            '${item.id}',
-            this.value
-          )"
-        >
-
-          <option
-            ${
-              item.status ===
-              "MENUNGGU PENGECEKAN"
-              ? "selected"
-              : ""
-            }
-          >
-            MENUNGGU PENGECEKAN
-          </option>
-
-          <option
-            ${
-              item.status ===
-              "DISETUJUI"
-              ? "selected"
-              : ""
-            }
-          >
-            DISETUJUI
-          </option>
-
-          <option
-            ${
-              item.status ===
-              "MENUNGGU PEMBAYARAN"
-              ? "selected"
-              : ""
-            }
-          >
-            MENUNGGU PEMBAYARAN
-          </option>
-
-          <option
-            ${
-              item.status ===
-              "SUDAH DIBAYAR"
-              ? "selected"
-              : ""
-            }
-          >
-            SUDAH DIBAYAR
-          </option>
-
-          <option
-            ${
-              item.status ===
-              "DITOLAK"
-              ? "selected"
-              : ""
-            }
-          >
-            DITOLAK
-          </option>
-
-        </select>
-
-        <details>
-
-          <summary>
-            Lihat akun
-          </summary>
-
-          <div class="accounts">
-            ${escapeHtml(
-              item.accounts
-            )}
-          </div>
-
-        </details>
-
-      </div>
-
-    `).join("");
-}
-
-
-async function updateStatus(
-  submissionId,
-  newStatus
-) {
-
-  const { error } =
-    await supabaseClient
-      .from("submissions")
-      .update({
-        status: newStatus
       })
-      .eq(
-        "id",
-        submissionId
-      );
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-  }
-
-  await loadAdminSubmissions();
-}
-
-
-/* =========================
-   ADMIN SELLERS / CHAT
-========================= */
-
-async function loadSellerList() {
-
-  const {
-    data,
-    error
-  } = await supabaseClient
-    .from("messages")
-    .select("seller_id")
-    .order("created_at", {
-      ascending: false
-    });
-
-  const box =
-    document.getElementById(
-      "sellerList"
-    );
-
-  if (error) {
-
-    box.textContent =
-      error.message;
-
-    return;
-  }
-
-  const sellers =
-    [...new Set(
-      data.map(x => x.seller_id)
-    )];
-
-  if (!sellers.length) {
-
-    box.innerHTML =
-      "<p>Belum ada percakapan.</p>";
-
-    return;
-  }
-
-  box.innerHTML =
-    sellers.map(id => `
-
-      <button
-        onclick="openAdminChat('${id}')"
-      >
-        Seller:
-        ${escapeHtml(id)}
-      </button>
-
-    `).join("");
-}
-
-
-async function openAdminChat(
-  sellerId
-) {
-
-  currentChatSeller =
-    sellerId;
-
-  document
-    .getElementById(
-      "adminChatArea"
-    )
-    .classList.remove("hidden");
-
-  document.getElementById(
-    "chatSellerTitle"
-  ).textContent =
-    "Chat Seller: " + sellerId;
-
-  await loadAdminChat();
-}
-
-
-async function loadAdminChat() {
-
-  if (!currentChatSeller)
-    return;
-
-  const {
-    data,
-    error
-  } = await supabaseClient
-    .from("messages")
-    .select("*")
-    .eq(
-      "seller_id",
-      currentChatSeller
-    )
-    .order("created_at", {
-      ascending: true
-    });
-
-  const box =
-    document.getElementById(
-      "adminChat"
-    );
-
-  if (error) {
-
-    box.textContent =
-      error.message;
-
-    return;
-  }
-
-  box.innerHTML =
-    data.map(message => `
-
-      <div class="message ${
-        message.sender_id === currentUser.id
-          ? "me"
-          : "other"
-      }">
-
-        ${escapeHtml(
-          message.message
-        )}
-
-        <div class="small">
-          ${new Date(
-            message.created_at
-          ).toLocaleString("id-ID")}
-        </div>
-
-      </div>
-
-    `).join("");
-
-  box.scrollTop =
-    box.scrollHeight;
-}
-
-
-async function sendAdminMessage() {
-
-  if (!currentChatSeller)
-    return;
-
-  const input =
-    document.getElementById(
-      "adminMessage"
-    );
-
-  const message =
-    input.value.trim();
-
-  if (!message) return;
-
-  const { error } =
-    await supabaseClient
-      .from("messages")
-      .insert({
-
-        seller_id:
-          currentChatSeller,
-
-        sender_id:
-          currentUser.id,
-
-        message
-
-      });
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-  }
-
-  input.value = "";
-
-  await loadAdminChat();
-  await loadSellerList();
-}
-
-
-/* =========================
-   SECURITY DISPLAY
-========================= */
-
-function escapeHtml(value) {
-
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-
-/* =========================
-   START
-========================= */
-
-document.getElementById(
-  "siteTitle"
-).textContent =
-  CONFIG.SITE_TITLE;
-
-
-supabaseClient.auth.onAuthStateChange(
-  async () => {
-    await loadApp();
-  }
-);
-
-loadApp();
-
-</script>
-
-</body>
-                                   </html>
+      .map(sellerId => {
+
+        const orders =
+          grouped[sellerId];
+
+        const activeOrders =
+          orders.filter(item =>
+            item.status !== "SUDAH DIBAYAR" &&
+            item.status !== "DITOLAK"
+          );
+
+        const finishedOrders =
+          orders.filter(item =>
+            item.status === "SUDAH DIBAYAR" ||
+            item.status === "DITOLAK"
+          );
+
+        const sellerName =
+          getSellerName(sellerId);
+
+        const isOpen =
+          openSellerPanels[sellerId] === true;
+
+        return `
+
+          <div class="seller-card">
+
+            <div
+              class="seller-header"
+              onclick="toggleSellerPanel('${sellerId}')"
+            >
+
+              ${sellerName}
+
+              <span style="float:right;">
+                ${isOpen ? "▲" : "▼"}
+              </span>
+
+              <div class="small">
+                ${activeOrders.length}
+                order aktif ·
+                ${finishedOrders.length}
+                selesai
+              </div>
+
+            </div>
+
+
+            <div
+              id="sellerPanel-${sellerId}"
+              class="seller-content ${
+                isOpen ? "" : "hidden"
+              }"
+            >
+
+              ${
+                activeOrders.length
+                  ? `
+                    <h3>📦 Order Aktif</h3>
+
+                    ${activeOrders.map(item => `
+
+                      <div class="active-order">
+
+                        <b>
+                          ${escapeHtml(
+                            item.account_count
+                          )} akun
+                        </b>
+
+                        <p>
+                          Status:
+                          <span class="status">
+                            ${escapeHtml(
+                              item.status
+                            )}
+                          </span>
+                        </p>
+
+                        <p>
+                          DANA:
+                          ${escapeHtml(
+                            item.dana_number
+                          )}
+                        </p>
+
+                        <p class="small">
+                          Tanggal:
+                          ${formatDate(
+                            item.created_at
+                          )}
+                        </p>
+
+                        <button
+                          class="blue"
+                          onclick="toggleAccounts('${item.id}')"
+                        >
+                          👁 Lihat Akun
+                        </button>
+
+                        <div
+                          id="accounts-${item.id}"
+                          class="hidden"
+                        >
+                          <div class="accounts">
+                            ${escapeHtml(
+                              item.accounts
+                            )}
+                          </div>
+                        </div>
+
+
+                        <select
+                          onchange="updateStatus(
+                            '${item.id}',
+                            this.value
+                          )"
+                        >
+
+                          <option
+                            ${
+                              item.status ===
+                              "MENUNGGU PENGECEKAN"
+                              ? "selected"
+                              : ""
+                            }
+                          >
+                            MENUNGGU PENGECEKAN
+                          </option>
+
+                          <option
+                            ${
+                              item.status ===
+                              "DISETUJUI"
+                              ? "selected"
+                              : ""
+                            }
+                          >
+                            DISETUJUI
+                          </option>
+
+                          <option
+                            ${
+                              item.status ===
+                              "MENUNGGU PEMBAYARAN"
+                              ? "selected"
+                              : ""
+                            }
+                          >
+                            MENUNGGU PEMBAYARAN
+                          </option>
+
+                          <option
+                            ${
+                              item.status ===
+                              "SUDAH DIBAYAR"
+                              ? "selected"
+                              : ""
+                            }
+                          >
+                            SUDAH 
