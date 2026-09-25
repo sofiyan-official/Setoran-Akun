@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Setoran Akun</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f3f4f6;
+  color: #111827;
+}
+
+header {
+  background: #111827;
+  color: white;
+  padding: 18px;
+  text-align: center;
+}
+
+.container {
+  max-width: 1000px;
+  margin: auto;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 3px 12px rgba(0,0,0,.08);
+}
+
+input,
+textarea,
+select,
+button {
+  width: 100%;
+  padding: 13px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 15px;
+}
+
+textarea {
+  min-height: 260px;
+  resize: vertical;
+}
+
+button {
+  background: #111827;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover {
+  opacity: .9;
+}
+
+button.secondary {
+  background: #6b7280;
+}
+
+button.danger {
+  background: #b91c1c;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.center {
+  text-align: center;
+}
+
+.count {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 8px 0 15px;
+}
+
+.status {
+  display: inline-block;
+  padding: 6px 10px;
+  background: #e5e7eb;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+.item {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 12px;
+}
+
+.accounts {
+  background: #111827;
+  color: white;
+  padding: 15px;
+  border-radius: 8px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.chat-box {
+  height: 300px;
+  overflow-y: auto;
+  background: #f9fafb;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 10px;
+}
+
+.message {
+  padding: 9px 12px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  max-width: 85%;
+}
+
+.message.me {
+  background: #dbeafe;
+  margin-left: auto;
+}
+
+.message.other {
+  background: #e5e7eb;
+}
+
+.small {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+h2, h3 {
+  margin-top: 0;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1 id="siteTitle">SETORAN AKUN</h1>
+  <div>Panel Penyetoran</div>
+</header>
+
+<div class="container">
+
+<!-- AUTH -->
+<section id="authSection" class="card">
+
+  <h2>Login / Daftar</h2>
+
+  <input
+    id="email"
+    type="email"
+    placeholder="Email"
+  >
+
+  <input
+    id="password"
+    type="password"
+    placeholder="Password"
+  >
+
+  <button onclick="login()">
+    Login
+  </button>
+
+  <button onclick="register()" class="secondary">
+    Daftar
+  </button>
+
+  <p id="authMessage" class="small"></p>
+
+</section>
+
+
+<!-- SELLER -->
+<section id="sellerSection" class="hidden">
+
+  <div class="card">
+
+    <h2>Dashboard Seller</h2>
+
+    <p>
+      Kamu login sebagai seller.
+    </p>
+
+    <button
+      onclick="logout()"
+      class="danger"
+    >
+      Logout
+    </button>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>Setor Akun</h2>
+
+    <p>
+      Masukkan minimal 50 baris akun.
+      Satu akun per baris.
+    </p>
+
+    <textarea
+      id="accountInput"
+      placeholder="akun1@example.com
+akun2@example.com
+akun3@example.com
+..."
+      oninput="countAccounts()"
+    ></textarea>
+
+    <div class="count">
+      Jumlah: <span id="accountCount">0</span>
+    </div>
+
+    <input
+      id="danaInput"
+      type="text"
+      placeholder="Nomor DANA"
+    >
+
+    <button onclick="submitAccounts()">
+      KIRIM SETORAN
+    </button>
+
+    <p id="submitMessage" class="small"></p>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>Setoran Saya</h2>
+
+    <div id="sellerSubmissions">
+      Memuat...
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>💬 Pesan dengan Admin</h2>
+
+    <div
+      id="sellerChat"
+      class="chat-box"
+    ></div>
+
+    <input
+      id="sellerMessage"
+      type="text"
+      placeholder="Tulis pesan..."
+    >
+
+    <button onclick="sendSellerMessage()">
+      Kirim Pesan
+    </button>
+
+  </div>
+
+</section>
+
+
+<!-- ADMIN -->
+<section id="adminSection" class="hidden">
+
+  <div class="card">
+
+    <h2>Dashboard Admin</h2>
+
+    <p>
+      Kamu login sebagai administrator.
+    </p>
+
+    <button
+      onclick="logout()"
+      class="danger"
+    >
+      Logout
+    </button>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>Semua Setoran</h2>
+
+    <select
+      id="statusFilter"
+      onchange="loadAdminSubmissions()"
+    >
+      <option value="">Semua Status</option>
+      <option>MENUNGGU PENGECEKAN</option>
+      <option>DISETUJUI</option>
+      <option>MENUNGGU PEMBAYARAN</option>
+      <option>SUDAH DIBAYAR</option>
+      <option>DITOLAK</option>
+    </select>
+
+    <div id="adminSubmissions">
+      Memuat...
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>💬 Chat Seller</h2>
+
+    <div id="sellerList">
+      Memuat...
+    </div>
+
+    <div id="adminChatArea" class="hidden">
+
+      <h3 id="chatSellerTitle">
+        Chat
+      </h3>
+
+      <div
+        id="adminChat"
+        class="chat-box"
+      ></div>
+
+      <input
+        id="adminMessage"
+        type="text"
+        placeholder="Balas pesan..."
+      >
+
+      <button onclick="sendAdminMessage()">
+        Kirim Pesan
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+</div>
+
+
+<script>
+
+const CONFIG = {
+
+  SUPABASE_URL:
+    "https://rwddgvhbpbdbkarctroy.supabase.co",
+
+  SUPABASE_ANON_KEY:
+    "sb_publishable_ouv-3OdcpRip_QAB_FprKA_DrvRx1ig",
+
+  ADMIN_EMAIL:
+    "syan3009@gmail.com",
+
+  SITE_TITLE:
+    "SETORAN AKUN"
+
+};
+
+
+const supabaseClient =
+  window.supabase.createClient(
+    CONFIG.SUPABASE_URL,
+    CONFIG.SUPABASE_ANON_KEY
+  );
+
+
+let currentUser = null;
+let currentChatSeller = null;
+
+
+/* =========================
+   AUTH
+========================= */
+
+async function register() {
+
+  const email =
+    document.getElementById("email").value.trim();
+
+  const password =
+    document.getElementById("password").value;
+
+  if (!email || !password) {
+    showAuth("Email dan password wajib diisi.");
+    return;
+  }
+
+  const { error } =
+    await supabaseClient.auth.signUp({
+      email,
+      password
+    });
+
+  if (error) {
+    showAuth(error.message);
+    return;
+  }
+
+  showAuth(
+    "Pendaftaran berhasil. Silakan login."
+  );
+}
+
+
+async function login() {
+
+  const email =
+    document.getElementById("email").value.trim();
+
+  const password =
+    document.getElementById("password").value;
+
+  if (!email || !password) {
+    showAuth("Email dan password wajib diisi.");
+    return;
+  }
+
+  const { error } =
+    await supabaseClient.auth.signInWithPassword({
+      email,
+      password
+    });
+
+  if (error) {
+    showAuth(error.message);
+    return;
+  }
+
+  await loadApp();
+}
+
+
+async function logout() {
+
+  await supabaseClient.auth.signOut();
+
+  location.reload();
+}
+
+
+function showAuth(message) {
+
+  document.getElementById(
+    "authMessage"
+  ).textContent = message;
+}
+
+
+/* =========================
+   APP
+========================= */
+
+async function loadApp() {
+
+  const {
+    data: {
+      user
+    }
+  } = await supabaseClient.auth.getUser();
+
+  if (!user) return;
+
+  currentUser = user;
+
+  document.getElementById(
+    "authSection"
+  ).classList.add("hidden");
+
+  const isAdmin =
+    user.email.toLowerCase() ===
+    CONFIG.ADMIN_EMAIL.toLowerCase();
+
+  if (isAdmin) {
+
+    document
+      .getElementById("adminSection")
+      .classList.remove("hidden");
+
+    await loadAdminSubmissions();
+    await loadSellerList();
+
+  } else {
+
+    document
+      .getElementById("sellerSection")
+      .classList.remove("hidden");
+
+    await loadSellerSubmissions();
+    await loadSellerChat();
+
+  }
+}
+
+
+/* =========================
+   SELLER
+========================= */
+
+function countAccounts() {
+
+  const text =
+    document.getElementById(
+      "accountInput"
+    ).value;
+
+  const lines =
+    text
+      .split(/\r?\n/)
+      .map(x => x.trim())
+      .filter(x => x.length > 0);
+
+  document.getElementById(
+    "accountCount"
+  ).textContent = lines.length;
+}
+
+
+async function submitAccounts() {
+
+  const text =
+    document.getElementById(
+      "accountInput"
+    ).value;
+
+  const dana =
+    document.getElementById(
+      "danaInput"
+    ).value.trim();
+
+  const lines =
+    text
+      .split(/\r?\n/)
+      .map(x => x.trim())
+      .filter(x => x.length > 0);
+
+  if (lines.length < 50) {
+
+    document.getElementById(
+      "submitMessage"
+    ).textContent =
+      "Minimal 50 baris akun.";
+
+    return;
+  }
+
+  if (!dana) {
+
+    document.getElementById(
+      "submitMessage"
+    ).textContent =
+      "Nomor DANA wajib diisi.";
+
+    return;
+  }
+
+  const { error } =
+    await supabaseClient
+      .from("submissions")
+      .insert({
+
+        seller_id:
+          currentUser.id,
+
+        accounts:
+          lines.join("\n"),
+
+        account_count:
+          lines.length,
+
+        dana_number:
+          dana
+
+      });
+
+  if (error) {
+
+    document.getElementById(
+      "submitMessage"
+    ).textContent =
+      error.message;
+
+    return;
+  }
+
+  document.getElementById(
+    "accountInput"
+  ).value = "";
+
+  document.getElementById(
+    "danaInput"
+  ).value = "";
+
+  countAccounts();
+
+  document.getElementById(
+    "submitMessage"
+  ).textContent =
+    "Setoran berhasil dikirim.";
+
+  await loadSellerSubmissions();
+}
+
+
+async function loadSellerSubmissions() {
+
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .from("submissions")
+    .select("*")
+    .eq("seller_id", currentUser.id)
+    .order("created_at", {
+      ascending: false
+    });
+
+  const box =
+    document.getElementById(
+      "sellerSubmissions"
+    );
+
+  if (error) {
+
+    box.textContent =
+      error.message;
+
+    return;
+  }
+
+  if (!data.length) {
+
+    box.innerHTML =
+      "<p>Belum ada setoran.</p>";
+
+    return;
+  }
+
+  box.innerHTML =
+    data.map(item => `
+
+      <div class="item">
+
+        <b>
+          ${escapeHtml(
+            item.account_count
+          )} akun
+        </b>
+
+        <p>
+          DANA:
+          ${escapeHtml(
+            item.dana_number
+          )}
+        </p>
+
+        <span class="status">
+          ${escapeHtml(
+            item.status
+          )}
+        </span>
+
+        <p class="small">
+          ${new Date(
+            item.created_at
+          ).toLocaleString("id-ID")}
+        </p>
+
+      </div>
+
+    `).join("");
+}
+
+
+/* =========================
+   SELLER CHAT
+========================= */
+
+async function loadSellerChat() {
+
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .from("messages")
+    .select("*")
+    .eq("seller_id", currentUser.id)
+    .order("created_at", {
+      ascending: true
+    });
+
+  const box =
+    document.getElementById(
+      "sellerChat"
+    );
+
+  if (error) {
+
+    box.textContent =
+      error.message;
+
+    return;
+  }
+
+  box.innerHTML =
+    data.map(message => `
+
+      <div class="message ${
+        message.sender_id === currentUser.id
+          ? "me"
+          : "other"
+      }">
+
+        ${escapeHtml(
+          message.message
+        )}
+
+        <div class="small">
+          ${new Date(
+            message.created_at
+          ).toLocaleString("id-ID")}
+        </div>
+
+      </div>
+
+    `).join("");
+
+  box.scrollTop =
+    box.scrollHeight;
+}
+
+
+async function sendSellerMessage() {
+
+  const input =
+    document.getElementById(
+      "sellerMessage"
+    );
+
+  const message =
+    input.value.trim();
+
+  if (!message) return;
+
+  const { error } =
+    await supabaseClient
+      .from("messages")
+      .insert({
+
+        seller_id:
+          currentUser.id,
+
+        sender_id:
+          currentUser.id,
+
+        message
+
+      });
+
+  if (error) {
+
+    alert(error.message);
+
+    return;
+  }
+
+  input.value = "";
+
+  await loadSellerChat();
+}
+
+
+/* =========================
+   ADMIN SUBMISSIONS
+========================= */
+
+async function loadAdminSubmissions() {
+
+  const filter =
+    document.getElementById(
+      "statusFilter"
+    ).value;
+
+  let query =
+    supabaseClient
+      .from("submissions")
+      .select("*")
+      .order("created_at", {
+        ascending: false
+      });
+
+  if (filter) {
+    query =
+      query.eq(
+        "status",
+        filter
+      );
+  }
+
+  const {
+    data,
+    error
+  } = await query;
+
+  const box =
+    document.getElementById(
+      "adminSubmissions"
+    );
+
+  if (error) {
+
+    box.textContent =
+      error.message;
+
+    return;
+  }
+
+  if (!data.length) {
+
+    box.innerHTML =
+      "<p>Tidak ada data.</p>";
+
+    return;
+  }
+
+  box.innerHTML =
+    data.map(item => `
+
+      <div class="item">
+
+        <b>
+          ${escapeHtml(
+            item.account_count
+          )} akun
+        </b>
+
+        <p>
+          Seller ID:
+          ${escapeHtml(
+            item.seller_id
+          )}
+        </p>
+
+        <p>
+          DANA:
+          ${escapeHtml(
+            item.dana_number
+          )}
+        </p>
+
+        <p>
+          Tanggal:
+          ${new Date(
+            item.created_at
+          ).toLocaleString("id-ID")}
+        </p>
+
+        <select
+          onchange="updateStatus(
+            '${item.id}',
+            this.value
+          )"
+        >
+
+          <option
+            ${
+              item.status ===
+              "MENUNGGU PENGECEKAN"
+              ? "selected"
+              : ""
+            }
+          >
+            MENUNGGU PENGECEKAN
+          </option>
+
+          <option
+            ${
+              item.status ===
+              "DISETUJUI"
+              ? "selected"
+              : ""
+            }
+          >
+            DISETUJUI
+          </option>
+
+          <option
+            ${
+              item.status ===
+              "MENUNGGU PEMBAYARAN"
+              ? "selected"
+              : ""
+            }
+          >
+            MENUNGGU PEMBAYARAN
+          </option>
+
+          <option
+            ${
+              item.status ===
+              "SUDAH DIBAYAR"
+              ? "selected"
+              : ""
+            }
+          >
+            SUDAH DIBAYAR
+          </option>
+
+          <option
+            ${
+              item.status ===
+              "DITOLAK"
+              ? "selected"
+              : ""
+            }
+          >
+            DITOLAK
+          </option>
+
+        </select>
+
+        <details>
+
+          <summary>
+            Lihat akun
+          </summary>
+
+          <div class="accounts">
+            ${escapeHtml(
+              item.accounts
+            )}
+          </div>
+
+        </details>
+
+      </div>
+
+    `).join("");
+}
+
+
+async function updateStatus(
+  submissionId,
+  newStatus
+) {
+
+  const { error } =
+    await supabaseClient
+      .from("submissions")
+      .update({
+        status: newStatus
+      })
+      .eq(
+        "id",
+        submissionId
+      );
+
+  if (error) {
+
+    alert(error.message);
+
+    return;
+  }
+
+  await loadAdminSubmissions();
+}
+
+
+/* =========================
+   ADMIN SELLERS / CHAT
+========================= */
+
+async function loadSellerList() {
+
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .from("messages")
+    .select("seller_id")
+    .order("created_at", {
+      ascending: false
+    });
+
+  const box =
+    document.getElementById(
+      "sellerList"
+    );
+
+  if (error) {
+
+    box.textContent =
+      error.message;
+
+    return;
+  }
+
+  const sellers =
+    [...new Set(
+      data.map(x => x.seller_id)
+    )];
+
+  if (!sellers.length) {
+
+    box.innerHTML =
+      "<p>Belum ada percakapan.</p>";
+
+    return;
+  }
+
+  box.innerHTML =
+    sellers.map(id => `
+
+      <button
+        onclick="openAdminChat('${id}')"
+      >
+        Seller:
+        ${escapeHtml(id)}
+      </button>
+
+    `).join("");
+}
+
+
+async function openAdminChat(
+  sellerId
+) {
+
+  currentChatSeller =
+    sellerId;
+
+  document
+    .getElementById(
+      "adminChatArea"
+    )
+    .classList.remove("hidden");
+
+  document.getElementById(
+    "chatSellerTitle"
+  ).textContent =
+    "Chat Seller: " + sellerId;
+
+  await loadAdminChat();
+}
+
+
+async function loadAdminChat() {
+
+  if (!currentChatSeller)
+    return;
+
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .from("messages")
+    .select("*")
+    .eq(
+      "seller_id",
+      currentChatSeller
+    )
+    .order("created_at", {
+      ascending: true
+    });
+
+  const box =
+    document.getElementById(
+      "adminChat"
+    );
+
+  if (error) {
+
+    box.textContent =
+      error.message;
+
+    return;
+  }
+
+  box.innerHTML =
+    data.map(message => `
+
+      <div class="message ${
+        message.sender_id === currentUser.id
+          ? "me"
+          : "other"
+      }">
+
+        ${escapeHtml(
+          message.message
+        )}
+
+        <div class="small">
+          ${new Date(
+            message.created_at
+          ).toLocaleString("id-ID")}
+        </div>
+
+      </div>
+
+    `).join("");
+
+  box.scrollTop =
+    box.scrollHeight;
+}
+
+
+async function sendAdminMessage() {
+
+  if (!currentChatSeller)
+    return;
+
+  const input =
+    document.getElementById(
+      "adminMessage"
+    );
+
+  const message =
+    input.value.trim();
+
+  if (!message) return;
+
+  const { error } =
+    await supabaseClient
+      .from("messages")
+      .insert({
+
+        seller_id:
+          currentChatSeller,
+
+        sender_id:
+          currentUser.id,
+
+        message
+
+      });
+
+  if (error) {
+
+    alert(error.message);
+
+    return;
+  }
+
+  input.value = "";
+
+  await loadAdminChat();
+  await loadSellerList();
+}
+
+
+/* =========================
+   SECURITY DISPLAY
+========================= */
+
+function escapeHtml(value) {
+
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+
+/* =========================
+   START
+========================= */
+
+document.getElementById(
+  "siteTitle"
+).textContent =
+  CONFIG.SITE_TITLE;
+
+
+supabaseClient.auth.onAuthStateChange(
+  async () => {
+    await loadApp();
+  }
+);
+
+loadApp();
+
+</script>
+
+</body>
+                                   </html>
