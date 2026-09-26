@@ -32,10 +32,8 @@
       padding-bottom: 30px;
     }
 
-    /* Helper Classes */
     .hidden { display: none !important; }
 
-    /* Card Styling */
     .card {
       background-color: #ffffff;
       border: 3px solid #1e293b;
@@ -46,7 +44,6 @@
       position: relative;
     }
 
-    /* Header Styling */
     .header-banner {
       background-color: #9254ff;
       border: 3px solid #1e293b;
@@ -65,7 +62,6 @@
       text-shadow: 2px 2px 0px #1e293b, -2px -2px 0px #1e293b, 2px -2px 0px #1e293b, -2px 2px 0px #1e293b;
     }
 
-    /* Login Screen */
     .login-title {
       text-align: center;
       color: #9254ff;
@@ -92,15 +88,7 @@
       margin-bottom: 5px;
     }
 
-    .input-box {
-      width: 100%;
-      padding: 12px 15px 12px 40px;
-      border: 2px solid #1e293b;
-      border-radius: 25px;
-      font-size: 14px;
-      outline: none;
-    }
-
+    /* FIX INPUT WRAPPER DI HP */
     .input-wrapper {
       position: relative;
       width: 100%;
@@ -113,13 +101,13 @@
       left: 15px;
       font-size: 18px;
       color: #1e293b;
-      pointer-events: none; /* Mencegah ikon menghalangi sentuhan jari di HP */
+      pointer-events: none; /* Mencegah ikon menghalangi klik input */
       z-index: 2;
     }
 
     .input-box {
       width: 100%;
-      padding: 12px 45px 12px 45px; /* Jarak kiri & kanan agar teks tidak menumpuk ikon */
+      padding: 12px 45px 12px 45px;
       border: 2px solid #1e293b;
       border-radius: 25px;
       font-size: 14px;
@@ -134,10 +122,10 @@
       font-size: 18px;
       color: #1e293b;
       cursor: pointer;
-      z-index: 3; /* Memastikan ikon mata di kanan paling atas agar bisa ditekan */
-      padding: 5px; /* Memperluas area tekan jari di layar HP */
+      z-index: 3;
+      padding: 5px;
     }
-    /* Buttons */
+
     .btn {
       width: 100%;
       padding: 12px;
@@ -160,7 +148,6 @@
     .btn-gray { background-color: #a6a6a6; color: #000; }
     .btn-red { background-color: #ff3131; color: #fff; }
 
-    /* Dashboard Seller Instructions */
     .instructions {
       font-size: 11px;
       font-weight: bold;
@@ -168,7 +155,6 @@
       line-height: 1.4;
     }
 
-    /* Account Input Textarea */
     textarea.account-input {
       width: 100%;
       height: 120px;
@@ -182,7 +168,6 @@
       outline: none;
     }
 
-    /* Checkbox Group */
     .checkbox-group {
       display: flex;
       flex-wrap: wrap;
@@ -199,7 +184,6 @@
       cursor: pointer;
     }
 
-    /* Status Items */
     .deposit-item {
       background: white;
       border: 3px solid #1e293b;
@@ -225,12 +209,11 @@
     }
 
     .badge {
-      padding: 8px 15px;
+      padding: 6px 12px;
       border: 2px solid #1e293b;
       border-radius: 20px;
       font-weight: 900;
-      font-size: 13px;
-      min-width: 110px;
+      font-size: 11px;
       text-align: center;
       box-shadow: 2px 2px 0px #1e293b;
     }
@@ -240,7 +223,6 @@
     .badge-ditolak { background-color: #ff3131; color: #fff; }
     .badge-dibayar { background-color: #7edf43; color: #000; }
 
-    /* Chat Area */
     .chat-box {
       border: 2px solid #1e293b;
       border-radius: 15px;
@@ -271,13 +253,6 @@
     .chat-bubble.received {
       align-self: flex-start;
       background-color: #e2e8f0;
-    }
-
-    .chat-bubble img {
-      max-width: 100%;
-      border-radius: 8px;
-      margin-top: 5px;
-      border: 1px solid #1e293b;
     }
 
     .chat-timestamp {
@@ -316,7 +291,6 @@
       flex-shrink: 0;
     }
 
-    /* WhatsApp Floating Button */
     .wa-float {
       position: fixed;
       bottom: 20px;
@@ -336,11 +310,8 @@
       z-index: 1000;
     }
 
-    .wa-float i {
-      font-size: 22px;
-    }
+    .wa-float i { font-size: 22px; }
 
-    /* Admin Specific Styles */
     .admin-card {
       background: white;
       border: 3px solid #1e293b;
@@ -354,25 +325,27 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
+      gap: 6px;
     }
 
     .seller-pill {
       border: 2px solid #1e293b;
       border-radius: 20px;
-      padding: 4px 12px;
-      font-size: 12px;
+      padding: 4px 10px;
+      font-size: 11px;
       font-weight: bold;
+      white-space: nowrap;
     }
 
     .toggle-accordion-btn {
       background: white;
       border: 2px solid #1e293b;
       border-radius: 8px;
-      width: 30px;
-      height: 30px;
+      width: 28px;
+      height: 28px;
       font-weight: bold;
       cursor: pointer;
+      flex-shrink: 0;
     }
 
     .admin-action-row {
@@ -393,7 +366,7 @@
 
   <div class="app-container">
 
-    <!-- ================= 1. HALAMAN LOGIN & DAFTAR ================= -->
+    <!-- VIEW LOGIN -->
     <div id="view-login">
       <h1 class="login-title">SELAMAT DATANG</h1>
       <p class="login-subtitle">Dihalaman Penyetoran Akun</p>
@@ -415,7 +388,7 @@
             <i class="fa-regular fa-eye toggle-pwd" onclick="togglePasswordVisibility('login-password')"></i>
           </div>
         </div>
-        
+
         <div style="margin-bottom: 25px; font-size: 11px; font-weight: bold;">
           <input type="checkbox" id="remember-me" checked>
           <label for="remember-me">Selalu Ingat Kata Sandi</label>
@@ -426,13 +399,12 @@
       </div>
     </div>
 
-    <!-- ================= 2. DASHBOARD SELLER ================= -->
+    <!-- VIEW SELLER -->
     <div id="view-seller" class="hidden">
       <div class="header-banner">
         <h1>SETORAN AKUN</h1>
       </div>
 
-      <!-- Card Petunjuk -->
       <div class="card">
         <h4 style="font-weight: 900; margin-bottom: 8px; font-size: 14px;">DASBOARD SELLER</h4>
         <ul class="instructions">
@@ -444,7 +416,6 @@
         </ul>
       </div>
 
-      <!-- Card Input Setoran -->
       <div class="card">
         <h4 style="font-weight: 900; font-size: 15px;">Masukan Akun Disini</h4>
         <p style="font-size: 11px; color: #444; margin-bottom: 5px;">Masukkan minimal 50 baris akun. Satu akun per baris.</p>
@@ -468,13 +439,10 @@
         <button class="btn btn-green" style="margin-top: 15px;" onclick="submitDeposit()">KIRIM SETORAN</button>
       </div>
 
-      <!-- Container History Setoran Seller -->
       <div id="seller-deposits-list"></div>
 
-      <!-- Card Chat Admin -->
       <div class="card">
         <h3 style="text-align: center; font-weight: 900; font-size: 18px; margin-bottom: 12px;">CHAT ADMIN</h3>
-        
         <div id="seller-chat-box" class="chat-box"></div>
 
         <div class="chat-input-wrapper">
@@ -487,19 +455,17 @@
 
       <button class="btn btn-red" onclick="handleLogout()">KELUAR</button>
 
-      <!-- Floating WhatsApp Button -->
-      <a href="https://wa.me/6281358164998" target="_blank" class="wa-float">
+      <a href="https://wa.me/" target="_blank" class="wa-float">
         Hubungi Melalui <i class="fa-brands fa-whatsapp"></i>
       </a>
     </div>
 
-    <!-- ================= 3. DASHBOARD ADMIN ================= -->
+    <!-- VIEW ADMIN -->
     <div id="view-admin" class="hidden">
       <div class="header-banner">
         <h1>DASBOARD ADMIN</h1>
       </div>
 
-      <!-- Container List Deposits untuk Admin -->
       <div id="admin-deposits-list"></div>
 
       <button class="btn btn-red" style="margin-top: 20px;" onclick="handleLogout()">KELUAR</button>
@@ -508,20 +474,15 @@
   </div>
 
   <script>
-    // ================= SUPABASE INITIALIZATION =================
-    // GANTI DENGAN URL & ANON KEY PROYEK SUPABASE KAMU Sesuai Langkah 1
-    const SUPABASE_URL = "https://rwddgvhbpbdbkarctroy.supabase.co"; 
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3ZGRndmhicGJkYmthcmN0cm95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzMTY0MDYsImV4cCI6MjEwNTg5MjQwNn0.kgjdAPhXgwtoVBy2EDEWNauB5eOqLcHS-t405tP6zRo"; 
+    // ================= SCRIPT LOGIK SUPABASE & DASHBOARD =================
+    const SUPABASE_URL = "https://rwddgvhbpbdbkarctroy.supabase.co"; // Replace URL Supabase Anda
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3ZGRndmhicGJkYmthcmN0cm95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzMTY0MDYsImV4cCI6MjEwNTg5MjQwNn0.kgjdAPhXgwtoVBy2EDEWNauB5eOqLcHS-t405tP6zRo"; // Replace Anon Key Supabase Anda
     
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let currentUser = null;
-    let currentAdminSelectedDepositId = null;
-
-    // Default Admin Credentials
     const ADMIN_EMAIL = "syan3009@gmail.com";
 
-    // ================= INITIAL LOAD =================
     window.addEventListener('DOMContentLoaded', async () => {
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (session) {
@@ -551,18 +512,23 @@
 
     function togglePasswordVisibility(inputId) {
       const input = document.getElementById(inputId);
-      input.type = input.type === 'password' ? 'text' : 'password';
+      const icon = document.querySelector('.toggle-pwd');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
     }
 
-    // ================= AUTHENTICATION FUNCTIONS =================
     async function handleLogin() {
       const email = document.getElementById('login-email').value.trim();
       const password = document.getElementById('login-password').value;
 
-      if (!email || !password) {
-        alert('Silakan isi email dan kata sandi!');
-        return;
-      }
+      if (!email || !password) return alert('Silakan isi email dan kata sandi!');
 
       const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
@@ -578,10 +544,7 @@
       const email = document.getElementById('login-email').value.trim();
       const password = document.getElementById('login-password').value;
 
-      if (!email || !password) {
-        alert('Silakan isi email dan kata sandi untuk mendaftar!');
-        return;
-      }
+      if (!email || !password) return alert('Silakan isi email dan kata sandi untuk mendaftar!');
 
       const { data, error } = await supabaseClient.auth.signUp({ email, password });
 
@@ -598,7 +561,6 @@
       showView('view-login');
     }
 
-    // ================= SELLER FUNCTIONS =================
     function updateAccountCount() {
       const text = document.getElementById('seller-accounts-text').value;
       const lines = text.split('\n').filter(line => line.trim() !== '');
@@ -607,35 +569,24 @@
 
     function handleCheckboxSingle(checkbox) {
       const checkboxes = document.querySelectorAll('input[name="pay-method"]');
-      checkboxes.forEach(cb => {
-        if (cb !== checkbox) cb.checked = false;
-      });
+      checkboxes.forEach(cb => { if (cb !== checkbox) cb.checked = false; });
     }
 
     async function submitDeposit() {
       const accountsText = document.getElementById('seller-accounts-text').value;
       const lines = accountsText.split('\n').filter(line => line.trim() !== '');
       
-      if (lines.length < 50) {
-        alert('Setoran minimal 50 baris akun!');
-        return;
-      }
+      if (lines.length < 50) return alert('Setoran minimal 50 baris akun!');
 
       const selectedMethod = document.querySelector('input[name="pay-method"]:checked');
-      if (!selectedMethod) {
-        alert('Silakan centang salah satu metode pembayaran terlebih dahulu!');
-        return;
-      }
+      if (!selectedMethod) return alert('Silakan centang salah satu metode pembayaran!');
 
       const accountNumber = document.getElementById('seller-account-number').value.trim();
-      if (!accountNumber) {
-        alert('Masukan nomor rekening/e-wallet anda!');
-        return;
-      }
+      if (!accountNumber) return alert('Masukan nomor rekening/e-wallet anda!');
 
       const sellerName = currentUser.email.split('@')[0];
 
-      const { data, error } = await supabaseClient
+      const { error } = await supabaseClient
         .from('deposits')
         .insert([{
           user_id: currentUser.id,
@@ -659,35 +610,33 @@
     }
 
     async function loadSellerDashboard() {
-      // Load Deposits History
       const { data: deposits, error } = await supabaseClient
         .from('deposits')
         .select('*')
         .eq('user_id', currentUser.id)
         .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error(error);
-        return;
-      }
+      if (error) return console.error(error);
 
       const container = document.getElementById('seller-deposits-list');
       container.innerHTML = '';
-
       const now = new Date();
 
       deposits.forEach(item => {
-        // Logika 1 Jam Auto-Hide untuk status DITOLAK atau DIBAYAR
         if (item.status === 'DITOLAK' || item.status === 'DIBAYAR') {
           if (item.confirmed_at) {
             const confirmedTime = new Date(item.confirmed_at);
-            const diffInHours = (now - confirmedTime) / (1000 * 60 * 60);
-            if (diffInHours >= 1) return; // Sembunyikan jika >= 1 jam
+            if ((now - confirmedTime) / (1000 * 60 * 60) >= 1) return;
           }
         }
 
         const dateStr = new Date(item.created_at).toLocaleString('id-ID');
         const badgeClass = `badge-${item.status.toLowerCase()}`;
+
+        let acceptedText = '';
+        if ((item.status === 'DITERIMA' || item.status === 'DIBAYAR') && item.accepted_count !== null && item.accepted_count !== undefined) {
+          acceptedText = `<span style="font-size: 11px; font-weight: bold; color: #0284c7; margin-right: 6px;">Diterima: ${item.accepted_count} akun</span>`;
+        }
 
         const html = `
           <div class="deposit-item">
@@ -696,121 +645,53 @@
               <div>${item.payment_method} : ${item.account_number}</div>
               <div class="date">${dateStr}</div>
             </div>
-            <div class="badge ${badgeClass}">${item.status}</div>
+            <div style="display: flex; align-items: center;">
+              ${acceptedText}
+              <div class="badge ${badgeClass}">${item.status}</div>
+            </div>
           </div>
         `;
         container.innerHTML += html;
       });
 
-      // Load Chat History (Ambil dari deposit terakhir seller)
       if (deposits.length > 0) {
         loadChatMessages(deposits[0].id, 'seller-chat-box');
       }
     }
 
-    // ================= ADMIN FUNCTIONS =================
     async function loadAdminDashboard() {
       const { data: deposits, error } = await supabaseClient
         .from('deposits')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error(error);async function loadAdminDashboard() {
-  const { data: deposits, error } = await supabaseClient
-    .from('deposits')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    console.error(error);
-    return;
-  }
-
-  const container = document.getElementById('admin-deposits-list');
-  container.innerHTML = '';
-
-  deposits.forEach((item) => {
-    const badgeClass = `badge-${item.status.toLowerCase()}`;
-    const acceptedVal = item.accepted_count !== null ? item.accepted_count : '';
-
-    const html = `
-      <div class="admin-card">
-        <div class="admin-card-header">
-          <div class="seller-pill">Nama akun seller : ${item.seller_name}</div>
-          <div class="seller-pill">Jumlah disetor : ${item.account_count}</div>
-          <button class="toggle-accordion-btn" onclick="toggleAdminAccordion('${item.id}')" id="btn-toggle-${item.id}">v</button>
-        </div>
-
-        <div id="accordion-body-${item.id}">
-          <!-- Tab List Akun yang dikirim Seller (Buka-Tutup) -->
-          <div style="margin-bottom: 10px;">
-            <button class="btn btn-gray" style="font-size: 12px; padding: 6px; margin-bottom: 5px;" onclick="toggleAccountsView('${item.id}')">
-              <i class="fa-solid fa-list"></i> Lihat List Akun Setoran (${item.account_count} baris)
-            </button>
-            <textarea id="accounts-view-${item.id}" class="account-input hidden" readonly style="background-color: #f1f5f9; cursor: default;">${item.accounts_text}</textarea>
-          </div>
-
-          <!-- Chat Box Admin -->
-          <div class="chat-box" id="admin-chat-box-${item.id}"></div>
-
-          <div class="chat-input-wrapper" style="margin-bottom: 10px;">
-            <input type="text" id="admin-chat-input-${item.id}" class="chat-input" placeholder="Tulis pesan disini......">
-            <input type="file" id="admin-file-input-${item.id}" accept="image/*" class="hidden" onchange="uploadImageAndSend('admin', '${item.id}')">
-            <button class="chat-btn-icon" onclick="document.getElementById('admin-file-input-${item.id}').click()"><i class="fa-solid fa-image"></i></button>
-            <button class="chat-btn-icon" onclick="sendChatMessage('admin', '${item.id}')"><i class="fa-solid fa-paper-plane"></i></button>
-          </div>
-
-          <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
-            <div class="seller-pill" style="flex:1;">${item.payment_method}: ${item.account_number}</div>
-            <div class="badge ${badgeClass}">${item.status}</div>
-          </div>
-
-          <!-- Input Jumlah Akun Diterima -->
-          <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
-            <label style="font-size: 12px; font-weight: bold; white-space: nowrap;">Jumlah Akun Diterima:</label>
-            <input type="number" id="accepted-count-input-${item.id}" class="input-box" style="padding: 6px 12px; font-size: 13px;" placeholder="Cth: 48" value="${acceptedVal}">
-          </div>
-
-          <!-- Tombol Aksi Admin -->
-          <div class="admin-action-row">
-            <button class="btn btn-green" onclick="updateDepositStatus('${item.id}', 'DITERIMA')">DITERIMA</button>
-            <button class="btn btn-red" onclick="updateDepositStatus('${item.id}', 'DITOLAK')">DITOLAK</button>
-            <button class="btn btn-green" style="background-color: #32daf8;" onclick="updateDepositStatus('${item.id}', 'DIBAYAR')">DIBAYAR</button>
-          </div>
-        </div>
-      </div>
-    `;
-    container.innerHTML += html;
-
-    // Load Chat per card Admin
-    loadChatMessages(item.id, `admin-chat-box-${item.id}`);
-  });
-}
-
-// Fungsi Buka-Tutup List Akun Setoran Seller
-function toggleAccountsView(id) {
-  const textarea = document.getElementById(`accounts-view-${id}`);
-  textarea.classList.toggle('hidden');
-}
-        return;
-      }
+      if (error) return console.error(error);
 
       const container = document.getElementById('admin-deposits-list');
       container.innerHTML = '';
 
       deposits.forEach((item) => {
         const badgeClass = `badge-${item.status.toLowerCase()}`;
-        
+        const acceptedVal = (item.accepted_count !== null && item.accepted_count !== undefined) ? item.accepted_count : '';
+
         const html = `
           <div class="admin-card">
             <div class="admin-card-header">
-              <div class="seller-pill">Nama akun seller : ${item.seller_name}</div>
-              <div class="seller-pill">Jumlah akun : ${item.account_count}</div>
-              <button class="toggle-accordion-btn" onclick="toggleAdminAccordion('${item.id}')" id="btn-toggle-${item.id}">v</button>
+              <div class="seller-pill">Seller: ${item.seller_name}</div>
+              <div class="seller-pill">${item.account_count} akun</div>
+              <div class="badge ${badgeClass}">${item.status}</div>
+              <button class="toggle-accordion-btn" onclick="toggleAdminAccordion('${item.id}')" id="btn-toggle-${item.id}">^</button>
             </div>
 
-            <div id="accordion-body-${item.id}">
+            <!-- DEFAULT KETUTUP (Class hidden) -->
+            <div id="accordion-body-${item.id}" class="hidden" style="margin-top: 12px;">
+              <div style="margin-bottom: 10px;">
+                <button class="btn btn-gray" style="font-size: 12px; padding: 6px; margin-bottom: 5px;" onclick="toggleAccountsView('${item.id}')">
+                  <i class="fa-solid fa-list"></i> Buka/Tutup List Akun Setoran
+                </button>
+                <textarea id="accounts-view-${item.id}" class="account-input hidden" readonly style="background-color: #f1f5f9; cursor: default;">${item.accounts_text}</textarea>
+              </div>
+
               <div class="chat-box" id="admin-chat-box-${item.id}"></div>
 
               <div class="chat-input-wrapper" style="margin-bottom: 10px;">
@@ -820,9 +701,13 @@ function toggleAccountsView(id) {
                 <button class="chat-btn-icon" onclick="sendChatMessage('admin', '${item.id}')"><i class="fa-solid fa-paper-plane"></i></button>
               </div>
 
-              <div style="display: flex; gap: 8px; align-items: center;">
+              <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
                 <div class="seller-pill" style="flex:1;">${item.payment_method}: ${item.account_number}</div>
-                <div class="badge ${badgeClass}">${item.status}</div>
+              </div>
+
+              <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                <label style="font-size: 12px; font-weight: bold; white-space: nowrap;">Jumlah Diterima:</label>
+                <input type="number" id="accepted-count-input-${item.id}" class="input-box" style="padding: 6px 12px; font-size: 13px;" placeholder="Cth: 48" value="${acceptedVal}">
               </div>
 
               <div class="admin-action-row">
@@ -834,8 +719,6 @@ function toggleAccountsView(id) {
           </div>
         `;
         container.innerHTML += html;
-        
-        // Load Chat per card Admin
         loadChatMessages(item.id, `admin-chat-box-${item.id}`);
       });
     }
@@ -852,171 +735,42 @@ function toggleAccountsView(id) {
       }
     }
 
+    function toggleAccountsView(id) {
+      document.getElementById(`accounts-view-${id}`).classList.toggle('hidden');
+    }
+
     async function updateDepositStatus(depositId, status) {
-  try {
-    const acceptedInput = document.getElementById(`accepted-count-input-${depositId}`).value;
-    const acceptedCount = acceptedInput !== '' ? parseInt(acceptedInput) : null;
+      try {
+        const acceptedInput = document.getElementById(`accepted-count-input-${depositId}`).value;
+        const acceptedCount = acceptedInput !== '' ? parseInt(acceptedInput) : null;
 
-    // Menyiapkan payload data
-    const payload = {
-      status: status,
-      confirmed_at: new Date().toISOString()
-    };
+        const payload = {
+          status: status,
+          confirmed_at: new Date().toISOString()
+        };
 
-    if (status === 'DITERIMA' || status === 'DIBAYAR') {
-      payload.accepted_count = acceptedCount;
-    } else {
-      payload.accepted_count = null;
-    }
+        if (status === 'DITERIMA' || status === 'DIBAYAR') {
+          payload.accepted_count = acceptedCount;
+        } else {
+          payload.accepted_count = null;
+        }
 
-    // Update ke Supabase
-    const { data, error } = await supabaseClient
-      .from('deposits')
-      .update(payload)
-      .eq('id', depositId)
-      .select();
+        const { error } = await supabaseClient
+          .from('deposits')
+          .update(payload)
+          .eq('id', depositId);
 
-    if (error) {
-      alert('Gagal mengupdate status!\nPesan Error: ' + error.message);
-      console.error('Update Error Detail:', error);
-    } else {
-      alert(`Status berhasil diubah menjadi: ${status}`);
-      loadAdminDashboard(); // Refresh tampilan admin
-    }
-  } catch (err) {
-    alert('Terjadi kesalahan sistem: ' + err.message);
-  }
-}
-
-async function loadAdminDashboard() {
-  const { data: deposits, error } = await supabaseClient
-    .from('deposits')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    console.error(error);
-    return;
-  }
-
-  const container = document.getElementById('admin-deposits-list');
-  container.innerHTML = '';
-
-  deposits.forEach((item) => {
-    const badgeClass = `badge-${item.status.toLowerCase()}`;
-    const acceptedVal = (item.accepted_count !== null && item.accepted_count !== undefined) ? item.accepted_count : '';
-
-    const html = `
-      <div class="admin-card">
-        <div class="admin-card-header">
-          <div class="seller-pill">Nama seller : ${item.seller_name}</div>
-          <div class="seller-pill">Disetor : ${item.account_count}</div>
-          <button class="toggle-accordion-btn" onclick="toggleAdminAccordion('${item.id}')" id="btn-toggle-${item.id}">v</button>
-        </div>
-
-        <div id="accordion-body-${item.id}">
-          <!-- Tab List Akun yang dikirim Seller -->
-          <div style="margin-bottom: 10px;">
-            <button class="btn btn-gray" style="font-size: 12px; padding: 6px; margin-bottom: 5px;" onclick="toggleAccountsView('${item.id}')">
-              <i class="fa-solid fa-list"></i> Lihat List Akun Setoran (${item.account_count} baris)
-            </button>
-            <textarea id="accounts-view-${item.id}" class="account-input hidden" readonly style="background-color: #f1f5f9; cursor: default;">${item.accounts_text}</textarea>
-          </div>
-
-          <!-- Chat Box Admin -->
-          <div class="chat-box" id="admin-chat-box-${item.id}"></div>
-
-          <div class="chat-input-wrapper" style="margin-bottom: 10px;">
-            <input type="text" id="admin-chat-input-${item.id}" class="chat-input" placeholder="Tulis pesan disini......">
-            <input type="file" id="admin-file-input-${item.id}" accept="image/*" class="hidden" onchange="uploadImageAndSend('admin', '${item.id}')">
-            <button class="chat-btn-icon" onclick="document.getElementById('admin-file-input-${item.id}').click()"><i class="fa-solid fa-image"></i></button>
-            <button class="chat-btn-icon" onclick="sendChatMessage('admin', '${item.id}')"><i class="fa-solid fa-paper-plane"></i></button>
-          </div>
-
-          <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
-            <div class="seller-pill" style="flex:1;">${item.payment_method}: ${item.account_number}</div>
-            <div class="badge ${badgeClass}">${item.status}</div>
-          </div>
-
-          <!-- Input Jumlah Akun Diterima -->
-          <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
-            <label style="font-size: 12px; font-weight: bold; white-space: nowrap;">Jumlah Akun Diterima:</label>
-            <input type="number" id="accepted-count-input-${item.id}" class="input-box" style="padding: 6px 12px; font-size: 13px;" placeholder="Cth: 48" value="${acceptedVal}">
-          </div>
-
-          <!-- Tombol Aksi Admin -->
-          <div class="admin-action-row">
-            <button class="btn btn-green" onclick="updateDepositStatus('${item.id}', 'DITERIMA')">DITERIMA</button>
-            <button class="btn btn-red" onclick="updateDepositStatus('${item.id}', 'DITOLAK')">DITOLAK</button>
-            <button class="btn btn-green" style="background-color: #32daf8;" onclick="updateDepositStatus('${item.id}', 'DIBAYAR')">DIBAYAR</button>
-          </div>
-        </div>
-      </div>
-    `;
-    container.innerHTML += html;
-
-    // Load Chat per card Admin
-    loadChatMessages(item.id, `admin-chat-box-${item.id}`);
-  });
-}
-
-async function loadSellerDashboard() {
-  const { data: deposits, error } = await supabaseClient
-    .from('deposits')
-    .select('*')
-    .eq('user_id', currentUser.id)
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    console.error(error);
-    return;
-  }
-
-  const container = document.getElementById('seller-deposits-list');
-  container.innerHTML = '';
-
-  const now = new Date();
-
-  deposits.forEach(item => {
-    // Logika Auto-Hide 1 Jam untuk DITOLAK / DIBAYAR
-    if (item.status === 'DITOLAK' || item.status === 'DIBAYAR') {
-      if (item.confirmed_at) {
-        const confirmedTime = new Date(item.confirmed_at);
-        const diffInHours = (now - confirmedTime) / (1000 * 60 * 60);
-        if (diffInHours >= 1) return;
+        if (error) {
+          alert('Gagal mengupdate status: ' + error.message);
+        } else {
+          alert(`Status berhasil diubah menjadi: ${status}`);
+          loadAdminDashboard();
+        }
+      } catch (err) {
+        alert('Terjadi kesalahan: ' + err.message);
       }
     }
 
-    const dateStr = new Date(item.created_at).toLocaleString('id-ID');
-    const badgeClass = `badge-${item.status.toLowerCase()}`;
-
-    // Tampilkan jumlah akun diterima jika status DITERIMA atau DIBAYAR
-    let acceptedText = '';
-    if ((item.status === 'DITERIMA' || item.status === 'DIBAYAR') && item.accepted_count !== null && item.accepted_count !== undefined) {
-      acceptedText = `<span style="font-size: 11px; font-weight: bold; color: #0284c7; margin-right: 6px;">Diterima: ${item.accepted_count} akun</span>`;
-    }
-
-    const html = `
-      <div class="deposit-item">
-        <div class="deposit-info">
-          <div>${item.account_count} akun</div>
-          <div>${item.payment_method} : ${item.account_number}</div>
-          <div class="date">${dateStr}</div>
-        </div>
-        <div style="display: flex; align-items: center;">
-          ${acceptedText}
-          <div class="badge ${badgeClass}">${item.status}</div>
-        </div>
-      </div>
-    `;
-    container.innerHTML += html;
-  });
-
-  if (deposits.length > 0) {
-    loadChatMessages(deposits[0].id, 'seller-chat-box');
-  }
-}
-    // ================= CHAT REAL-TIME FUNCTIONS =================
     async function loadChatMessages(depositId, containerId) {
       const { data: messages, error } = await supabaseClient
         .from('chat_messages')
@@ -1037,7 +791,15 @@ async function loadSellerDashboard() {
 
         let content = '';
         if (msg.message) content += `<div>${msg.message}</div>`;
-        if (msg.image_url) content += `<img src="${msg.image_url}" alt="Lampiran">`;
+        if (msg.image_url) {
+          content += `
+            <div style="margin-top: 5px;">
+              <a href="${msg.image_url}" target="_blank">
+                <img src="${msg.image_url}" alt="Bukti Pembayaran" style="max-width: 100%; max-height: 200px; border-radius: 10px; border: 2px solid #1e293b; display: block;">
+              </a>
+            </div>
+          `;
+        }
 
         const html = `
           <div class="chat-bubble ${bubbleClass}">
@@ -1105,30 +867,23 @@ async function loadSellerDashboard() {
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `chat/${fileName}`;
 
-      // Upload Ke Bucket Supabase Storage
       const { error: uploadError } = await supabaseClient.storage
         .from('chat-attachments')
         .upload(filePath, file);
 
-      if (uploadError) {
-        alert('Gagal mengunggah gambar: ' + uploadError.message);
-        return;
-      }
+      if (uploadError) return alert('Gagal mengunggah gambar: ' + uploadError.message);
 
       const { data: publicUrlData } = supabaseClient.storage
         .from('chat-attachments')
         .getPublicUrl(filePath);
 
-      const imageUrl = publicUrlData.publicUrl;
-
-      // Simpan ke database chat
       await supabaseClient
         .from('chat_messages')
         .insert([{
           deposit_id: targetDepositId,
           sender_id: currentUser.id,
           sender_email: currentUser.email,
-          image_url: imageUrl
+          image_url: publicUrlData.publicUrl
         }]);
 
       fileInput.value = '';
