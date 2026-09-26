@@ -628,7 +628,7 @@
         if (item.status === 'DITOLAK' || item.status === 'DIBAYAR') {
           if (item.confirmed_at) {
             const confirmedTime = new Date(item.confirmed_at);
-            if ((now - confirmedTime) / (1000 * 60 * 60) >= 1) return;
+            if ((now - confirmedTime) / (1000 * 60 * 60) >= 12) return;
           }
         }
 
@@ -694,6 +694,38 @@
                 <textarea id="accounts-view-${item.id}" class="account-input hidden" readonly style="background-color: #f1f5f9; cursor: default;">${item.accounts_text}</textarea>
               </div>
 
+              <!-- Fitur Laporan Hasil Setoran & Pengiriman Email -->
+<div style="margin-top: 10px; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+  <button type="button" class="btn-secondary" style="font-size: 11px; padding: 4px 8px; width: auto;" onclick="toggleElement('report-box-${item.id}')">
+    📋 Toggle Laporan Email
+  </button>
+
+  <div id="report-box-${item.id}" style="display: none; margin-top: 10px;">
+    <!-- Input Jumlah Diterima -->
+    <div style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+      <label style="font-size: 12px; font-weight: bold; width: 110px;">Jumlah Diterima:</label>
+      <input type="number" id="accepted-count-${item.id}" class="input-box" style="padding: 4px 8px; font-size: 12px; width: 80px;" placeholder="0" value="${item.accepted_count || ''}" oninput="updateReportPreview('${item.id}', ${item.account_count})">
+    </div>
+
+    <!-- Input List Akun Dikembalikan -->
+    <div style="margin-bottom: 8px;">
+      <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 4px;">List Akun Dikembalikan / Bermasalah:</label>
+      <textarea id="rejected-list-${item.id}" class="account-input" style="height: 60px; font-size: 11px;" placeholder="Paste baris akun verif/captcha/disable disini..." oninput="updateReportPreview('${item.id}', ${item.account_count})"></textarea>
+    </div>
+
+    <!-- Preview Format Email Otomatis -->
+    <div style="margin-bottom: 8px;">
+      <label style="font-size: 11px; font-weight: bold; color: #475569;">Preview Format Email:</label>
+      <pre id="email-preview-${item.id}" style="background: #ffffff; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 10px; white-space: pre-wrap; word-break: break-all; color: #334155; margin-top: 4px;"></pre>
+    </div>
+
+    <!-- Tombol Kirim Email -->
+    <button type="button" class="btn-primary" style="font-size: 11px; padding: 6px 12px; background: #2563eb;" onclick="sendEmailReport('${item.id}', '${item.user_email || ''}', ${item.account_count})">
+      ✉️ Kirim Email Laporan
+    </button>
+  </div>
+</div>
+
               <div class="chat-box" id="admin-chat-box-${item.id}"></div>
 
               <div class="chat-input-wrapper" style="margin-bottom: 10px;">
@@ -724,6 +756,71 @@
         loadChatMessages(item.id, `admin-chat-box-${item.id}`);
       });
     }
+
+    // Function untuk Hide/Show (Toggle)
+function toggleElement(elementId) {
+  const el = document.getElementById(elementId);
+  if (el) {
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  }
+}
+
+// Function untuk Update Format Email Otomatis
+function updateReportPreview(itemId, totalCount) {
+  const acceptedInput = document.getElementById(`accepted-count-${itemId}`);
+  const rejectedTextarea = document.getElementById(`rejected-list-${itemId}`);
+  const previewBox = document.getElementById(`email-preview-${itemId}`);
+
+  const accepted = parseInt(acceptedInput.value) || 0;
+  const rejected = totalCount - accepted;
+  const rejectedList = rejectedTextarea.value.trim();
+
+  const emailText = 
+`Halo Seller,
+
+Berikut adalah laporan hasil penyetoran akun kamu:
+
+- Total Akun Disetor: ${totalCount} akun
+- Jumlah Diterima: ${accepted} akun
+- Jumlah Ditolak/Dikembalikan: ${rejected} akun
+
+List Akun yang Dikembalikan (Bermasalah/Verif/Captcha):
+${rejectedList ? rejectedList : '(Tidak ada akun yang dikembalikan)'}
+
+Terima kasih telah melakukan setoran!`;
+
+  previewBox.innerText = emailText;
+}
+
+// Function untuk Membuka Aplikasi Email dengan Format Terisi Otomatis
+function sendEmailReport(itemId, sellerEmail, totalCount) {
+  const acceptedInput = document.getElementById(`accepted-count-${itemId}`);
+  const rejectedTextarea = document.getElementById(`rejected-list-${itemId}`);
+
+  const accepted = parseInt(acceptedInput.value) || 0;
+  const rejected = totalCount - accepted;
+  const rejectedList = rejectedTextarea.value.trim();
+
+  const subject = encodeURIComponent("Laporan Hasil Penyetoran Akun");
+  const bodyText = 
+`Halo Seller,
+
+Berikut adalah laporan hasil penyetoran akun kamu:
+
+- Total Akun Disetor: ${totalCount} akun
+- Jumlah Diterima: ${accepted} akun
+- Jumlah Ditolak/Dikembalikan: ${rejected} akun
+
+List Akun yang Dikembalikan (Bermasalah/Verif/Captcha):
+${rejectedList ? rejectedList : '(Tidak ada akun yang dikembalikan)'}
+
+Terima kasih telah melakukan setoran!`;
+
+  const body = encodeURIComponent(bodyText);
+  
+  // Membuka email client (Gmail / Outlook / Mail App)
+  window.open(`mailto:${sellerEmail}?subject=${subject}&body=${body}`, '_blank');
+}
 
     function toggleAdminAccordion(id) {
       const body = document.getElementById(`accordion-body-${id}`);
