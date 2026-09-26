@@ -856,19 +856,31 @@ function toggleAccountsView(id) {
   const acceptedInput = document.getElementById(`accepted-count-input-${depositId}`).value;
   const acceptedCount = acceptedInput !== '' ? parseInt(acceptedInput) : null;
 
-  const { error } = await supabaseClient
+  // Persiapkan data yang akan diupdate
+  const updateData = {
+    status: status,
+    confirmed_at: new Date().toISOString()
+  };
+
+  // Jika status DITERIMA atau DIBAYAR, sertakan jumlah akun yang diterima
+  if (status === 'DITERIMA' || status === 'DIBAYAR') {
+    updateData.accepted_count = acceptedCount;
+  } else if (status === 'DITOLAK') {
+    updateData.accepted_count = null;
+  }
+
+  const { data, error } = await supabaseClient
     .from('deposits')
-    .update({ 
-      status: status,
-      accepted_count: status === 'DITOLAK' ? null : acceptedCount,
-      confirmed_at: new Date().toISOString()
-    })
-    .eq('id', depositId);
+    .update(updateData)
+    .eq('id', depositId)
+    .select();
 
   if (error) {
     alert('Gagal mengupdate status: ' + error.message);
+    console.error('Update error:', error);
   } else {
-    loadAdminDashboard();
+    alert(`Status berhasil diubah menjadi: ${status}`);
+    loadAdminDashboard(); // Refresh tampilan admin
   }
 }
 
@@ -890,7 +902,7 @@ async function loadSellerDashboard() {
   const now = new Date();
 
   deposits.forEach(item => {
-    // Logika 1 Jam Auto-Hide untuk status DITOLAK atau DIBAYAR
+    // Logika Auto-Hide 1 Jam untuk DITOLAK / DIBAYAR
     if (item.status === 'DITOLAK' || item.status === 'DIBAYAR') {
       if (item.confirmed_at) {
         const confirmedTime = new Date(item.confirmed_at);
@@ -902,9 +914,9 @@ async function loadSellerDashboard() {
     const dateStr = new Date(item.created_at).toLocaleString('id-ID');
     const badgeClass = `badge-${item.status.toLowerCase()}`;
 
-    // Tampilkan jumlah akun diterima jika status DITERIMA / DIBAYAR dan ada nilainya
+    // Tampilkan jumlah akun diterima jika status DITERIMA atau DIBAYAR
     let acceptedText = '';
-    if ((item.status === 'DITERIMA' || item.status === 'DIBAYAR') && item.accepted_count !== null) {
+    if ((item.status === 'DITERIMA' || item.status === 'DIBAYAR') && item.accepted_count !== null && item.accepted_count !== undefined) {
       acceptedText = `<span style="font-size: 11px; font-weight: bold; color: #0284c7; margin-right: 6px;">Diterima: ${item.accepted_count} akun</span>`;
     }
 
@@ -928,7 +940,6 @@ async function loadSellerDashboard() {
     loadChatMessages(deposits[0].id, 'seller-chat-box');
   }
 }
-
     // ================= CHAT REAL-TIME FUNCTIONS =================
     async function loadChatMessages(depositId, containerId) {
       const { data: messages, error } = await supabaseClient
