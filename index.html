@@ -592,6 +592,7 @@
         .from('deposits')
         .insert([{
           user_id: currentUser.id,
+          user_email: currentUser.email,
           seller_name: sellerName,
           accounts_text: accountsText,
           account_count: lines.length,
@@ -794,15 +795,23 @@ Terima kasih telah melakukan setoran!`;
 
 // Function untuk Membuka Aplikasi Email dengan Format Terisi Otomatis
 function sendEmailReport(itemId, sellerEmail, totalCount) {
-  const acceptedInput = document.getElementById(`accepted-count-${itemId}`);
-  const rejectedTextarea = document.getElementById(`rejected-list-${itemId}`);
+      const acceptedInput = document.getElementById(`accepted-count-input-${itemId}`);
+      const rejectedTextarea = document.getElementById(`rejected-list-${itemId}`);
 
-  const accepted = parseInt(acceptedInput.value) || 0;
-  const rejected = totalCount - accepted;
-  const rejectedList = rejectedTextarea.value.trim();
+      const accepted = parseInt(acceptedInput.value) || 0;
+      const rejected = totalCount - accepted;
+      const rejectedList = rejectedTextarea ? rejectedTextarea.value.trim() : '';
 
-  const subject = encodeURIComponent("Laporan Hasil Penyetoran Akun");
-  const bodyText = 
+      // Tentukan alamat email seller (ambil dari parameter atau prompt jika tidak ditemukan)
+      let targetEmail = (sellerEmail && sellerEmail !== 'undefined' && sellerEmail !== 'null') ? sellerEmail : '';
+
+      if (!targetEmail) {
+        targetEmail = prompt("Alamat email seller tidak terdeteksi otomatis. Silakan masukkan email seller:");
+        if (!targetEmail) return; // Batal jika admin tidak memasukkan email
+      }
+
+      const subject = encodeURIComponent("Laporan Hasil Penyetoran Akun");
+      const bodyText = 
 `Halo Seller,
 
 Berikut adalah laporan hasil penyetoran akun kamu:
@@ -816,12 +825,11 @@ ${rejectedList ? rejectedList : '(Tidak ada akun yang dikembalikan)'}
 
 Terima kasih telah melakukan setoran!`;
 
-  const body = encodeURIComponent(bodyText);
-  
-  // Membuka email client (Gmail / Outlook / Mail App)
-  window.open(`mailto:${sellerEmail}?subject=${subject}&body=${body}`, '_blank');
-}
+      const body = encodeURIComponent(bodyText);
 
+      // Skema mailto: email_tujuan?subject=...&body=...
+      window.location.href = `mailto:${targetEmail}?subject=${subject}&body=${body}`;
+    }
     function toggleAdminAccordion(id) {
       const body = document.getElementById(`accordion-body-${id}`);
       const btn = document.getElementById(`btn-toggle-${id}`);
