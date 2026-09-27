@@ -662,7 +662,7 @@
       }
     }
 
-    async function loadAdminDashboard() {
+  async function loadAdminDashboard() {
       const { data: deposits, error } = await supabaseClient
         .from('deposits')
         .select('*')
@@ -673,7 +673,22 @@
       const container = document.getElementById('admin-deposits-list');
       container.innerHTML = '';
 
+      // 1. Ambil waktu saat ini
+      const now = new Date();
+
       deposits.forEach((item) => {
+        // =========================================================
+        // 2. PENYARING 12 JAM (TIDAK TAMPIL JIKA SUDAH >= 12 JAM)
+        // =========================================================
+        if (item.status === 'DITOLAK' || item.status === 'DIBAYAR' || item.status === 'DITERIMA') {
+          if (item.confirmed_at) {
+            const confirmedTime = new Date(item.confirmed_at);
+            const diffInHours = (now - confirmedTime) / (1000 * 60 * 60);
+            
+            if (diffInHours >= 12) return; // Lewati / Sembunyikan dari admin
+          }
+        }
+
         const badgeClass = `badge-${item.status.toLowerCase()}`;
         const acceptedVal = (item.accepted_count !== null && item.accepted_count !== undefined) ? item.accepted_count : '';
 
@@ -696,36 +711,36 @@
               </div>
 
               <!-- Fitur Laporan Hasil Setoran & Pengiriman Email -->
-<div style="margin-top: 10px; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
-  <button type="button" class="btn-secondary" style="font-size: 11px; padding: 4px 8px; width: auto;" onclick="toggleElement('report-box-${item.id}')">
-    📋 Toggle Laporan Email
-  </button>
+              <div style="margin-top: 10px; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <button type="button" class="btn-secondary" style="font-size: 11px; padding: 4px 8px; width: auto;" onclick="toggleElement('report-box-${item.id}')">
+                  📋 Toggle Laporan Email
+                </button>
 
-  <div id="report-box-${item.id}" style="display: none; margin-top: 10px;">
-    <!-- Input Jumlah Diterima -->
-    <div style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-      <label style="font-size: 12px; font-weight: bold; width: 110px;">Jumlah Diterima:</label>
-      <input type="number" id="accepted-count-${item.id}" class="input-box" style="padding: 4px 8px; font-size: 12px; width: 80px;" placeholder="0" value="${item.accepted_count || ''}" oninput="updateReportPreview('${item.id}', ${item.account_count})">
-    </div>
+                <div id="report-box-${item.id}" style="display: none; margin-top: 10px;">
+                  <!-- Input Jumlah Diterima -->
+                  <div style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                    <label style="font-size: 12px; font-weight: bold; width: 110px;">Jumlah Diterima:</label>
+                    <input type="number" id="accepted-count-${item.id}" class="input-box" style="padding: 4px 8px; font-size: 12px; width: 80px;" placeholder="0" value="${item.accepted_count || ''}" oninput="updateReportPreview('${item.id}', ${item.account_count})">
+                  </div>
 
-    <!-- Input List Akun Dikembalikan -->
-    <div style="margin-bottom: 8px;">
-      <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 4px;">List Akun Dikembalikan / Bermasalah:</label>
-      <textarea id="rejected-list-${item.id}" class="account-input" style="height: 60px; font-size: 11px;" placeholder="Paste baris akun verif/captcha/disable disini..." oninput="updateReportPreview('${item.id}', ${item.account_count})"></textarea>
-    </div>
+                  <!-- Input List Akun Dikembalikan -->
+                  <div style="margin-bottom: 8px;">
+                    <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 4px;">List Akun Dikembalikan / Bermasalah:</label>
+                    <textarea id="rejected-list-${item.id}" class="account-input" style="height: 60px; font-size: 11px;" placeholder="Paste baris akun verif/captcha/disable disini..." oninput="updateReportPreview('${item.id}', ${item.account_count})"></textarea>
+                  </div>
 
-    <!-- Preview Format Email Otomatis -->
-    <div style="margin-bottom: 8px;">
-      <label style="font-size: 11px; font-weight: bold; color: #475569;">Preview Format Email:</label>
-      <pre id="email-preview-${item.id}" style="background: #ffffff; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 10px; white-space: pre-wrap; word-break: break-all; color: #334155; margin-top: 4px;"></pre>
-    </div>
+                  <!-- Preview Format Email Otomatis -->
+                  <div style="margin-bottom: 8px;">
+                    <label style="font-size: 11px; font-weight: bold; color: #475569;">Preview Format Email:</label>
+                    <pre id="email-preview-${item.id}" style="background: #ffffff; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 10px; white-space: pre-wrap; word-break: break-all; color: #334155; margin-top: 4px;"></pre>
+                  </div>
 
-    <!-- Tombol Kirim Email -->
-    <button type="button" class="btn-primary" style="font-size: 11px; padding: 6px 12px; background: #2563eb;" onclick="sendEmailReport('${item.id}', '${item.user_email || ''}', ${item.account_count})">
-      ✉️ Kirim Email Laporan
-    </button>
-  </div>
-</div>
+                  <!-- Tombol Kirim Email -->
+                  <button type="button" class="btn-primary" style="font-size: 11px; padding: 6px 12px; background: #2563eb;" onclick="sendEmailReport('${item.id}', '${item.user_email || ''}', ${item.account_count})">
+                    ✉️ Kirim Email Laporan
+                  </button>
+                </div>
+              </div>
 
               <div class="chat-box" id="admin-chat-box-${item.id}"></div>
 
